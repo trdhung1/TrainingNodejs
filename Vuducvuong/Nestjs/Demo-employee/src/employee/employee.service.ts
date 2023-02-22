@@ -17,22 +17,23 @@ export class EmployeeService {
     createEmployeeDto: CreateEmployeeDto,
   ): Promise<EmployeeDocument> {
     const employee = new this.employeeModel(createEmployeeDto);
-    return employee.save();
+    return await employee.save();
   }
 
   async findAll(): Promise<EmployeeDocument[]> {
-    return this.employeeModel.find().exec();
+    return await this.employeeModel.find().exec();
   }
 
   async findOne(id: string) {
-    return this.employeeModel.findById(id);
+    return await this.employeeModel.findById(id);
   }
 
   async update(
     id: string,
     updateEmployeeDto: UpdateEmployeeDto,
   ): Promise<EmployeeDocument> {
-    return this.employeeModel.findByIdAndUpdate(id, updateEmployeeDto);
+    await this.employeeModel.findByIdAndUpdate(id, updateEmployeeDto);
+    return await this.employeeModel.findOne({_id: id})
   }
 
   async remove(id: string) {
