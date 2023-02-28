@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('crypto').randomBytes(64).toString('hex')
 const dotenv = require('dotenv');
+const readXlsxFile = require('read-excel-file/node');
+const fs = require("fs"); 
 dotenv.config();
 process.env.TOKEN_SECRET;
 app.use(express.json())
@@ -73,6 +75,25 @@ app.get('/data2', async function (req, res) {
     const data = await response.json();
     res.send(data)
 })
+
+app.get('/read', async function (req, res) {
+    readXlsxFile(fs.createReadStream('C:/Users/PC/Downloads/1.xlsx'))
+    .then((rows) => {
+        res.send(rows.toString())
+      })
+      
+})
+
+app.get('/write', async function (req, res) {
+var content = ',5,Histo,sachhay,author4,350,'
+fs.writeFile('1.xlsx', content, function (err) {
+    if (err)
+        throw err;
+    else //nếu không thì hiển thị nội dung ghi file thành công
+        console.log('Ghi file thanh cong!');
+});
+})
+
 app.get('/users', (req, res) => {
     res.send(users);
 });
@@ -167,3 +188,4 @@ app.delete('/users/delete/:id', function (req, res) {
 app.listen(port, function () {
     console.log("Your app running on port " + port);
 })
+

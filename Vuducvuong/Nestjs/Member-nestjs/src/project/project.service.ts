@@ -10,31 +10,31 @@ import { Project, ProjectDocument } from '../schema/project.schema';
 export class ProjectService {
   constructor(
     @InjectModel(Project.name)
-    private readonly projectModer : Model<ProjectDocument>,
+    private readonly projectModel : Model<ProjectDocument>,
   )  {}
 
   async create(createProjectDto : CreateProjectDto,) : Promise<ProjectDocument> {
-    const project = new this.projectModer(createProjectDto);
+    const project = new this.projectModel(createProjectDto);
     return await project.save();
   }
 
   async findAll(): Promise<ProjectDocument[]> {
-    return await this.projectModer.find().exec();
+    return await this.projectModel.find().exec();
   }
 
   async findOne(id: string) {
-    return await this.projectModer.findById(id);
+    return await this.projectModel.findById(id);
   }
 
   async update(
     id: string,
     updateProjectDto: UpdateProjectDto,
   ): Promise<ProjectDocument> {
-    await this.projectModer.findByIdAndUpdate(id, updateProjectDto);
-    return await this.projectModer.findOne({_id: id})
+    await this.projectModel.findByIdAndUpdate(id, updateProjectDto);
+    return await this.projectModel.findOne({_id: id})
   }
 
   async remove(id: string) {
-    return await this.projectModer.findByIdAndRemove(id);
+    return await this.projectModel.findByIdAndRemove(id);
   }
 }

@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 // eslint-disable-next-line prettier/prettier
 import { Member } from '../entities/member.entity';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsIn } from 'class-validator';
 export class CreateMemberDto extends Member {
+    
     @IsEmail()
     email: string;
   
@@ -11,5 +12,11 @@ export class CreateMemberDto extends Member {
 
     @IsNotEmpty()
     userName: string;
+
+    @IsIn(['Admin', 'HR', 'PM', 'User'])
+    role: string;
+
+    @IsIn(['Intern', 'Fresher', 'Junior', 'Mid', 'Senior'])
+    position: string;
     
 }
