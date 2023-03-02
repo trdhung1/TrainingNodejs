@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProjectDto } from '../dto/create-project.dto';
@@ -30,9 +30,19 @@ export class ProjectService {
     id: string,
     updateProjectDto: UpdateProjectDto,
   ): Promise<ProjectDocument> {
-    await this.projectModel.findByIdAndUpdate(id, updateProjectDto);
-    return await this.projectModel.findOne({_id: id})
+    try{
+      await this.projectModel.findByIdAndUpdate(id, updateProjectDto);
+      return await this.projectModel.findOne({_id: id})
+    }
+   catch (error) { 
+    throw new HttpException({
+      status: HttpStatus.FORBIDDEN,
+      error: 'id error',
+    }, HttpStatus.FORBIDDEN, {
+      cause: error
+    });
   }
+}
 
   async remove(id: string) {
     return await this.projectModel.findByIdAndRemove(id);

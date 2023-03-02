@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+
 export class Member {
   userName: string;
   fullName: string;

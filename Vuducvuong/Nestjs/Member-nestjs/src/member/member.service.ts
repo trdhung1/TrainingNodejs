@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateMemberDto } from '../dto/create-member.dto';
@@ -13,10 +13,20 @@ export class MemberService {
     private readonly memberModel : Model<MemberDocument>,
   )  {}
 
-  async create(createMemberDto : CreateMemberDto,) : Promise<MemberDocument> {
+  async create(createMemberDto : CreateMemberDto,) : Promise<any> {
+    const user = await this.memberModel.findOne( {userName :createMemberDto.userName});
+    const check = await this.memberModel.findOne( {email : createMemberDto.email });
+    if (user || check) {
+      return "username or password is exits";
+    }
     const member = new this.memberModel(createMemberDto);
     return await member.save();
   }
+
+  // async findRolePm(createMemberDto : CreateMemberDto,):Promise<any> 
+  // {
+  //   return await this.memberModel.find( {role :createMemberDto.role});
+  // }
 
   async findAll(): Promise<MemberDocument[]> {
     return await this.memberModel.find().exec();
@@ -30,8 +40,19 @@ export class MemberService {
     id: string,
     updateMemberDto: UpdateMemberDto,
   ): Promise<MemberDocument> {
-    await this.memberModel.findByIdAndUpdate(id, updateMemberDto);
-    return await this.memberModel.findOne({_id: id})
+    try {
+      await this.memberModel.findByIdAndUpdate(id, updateMemberDto);
+      return await this.memberModel.findOne({_id: id})
+    }
+    catch (error) { 
+      throw new HttpException({
+        status: HttpStatus.FORBIDDEN,
+        error: 'id error',
+      }, HttpStatus.FORBIDDEN, {
+        cause: error
+      });
+    }
+   
   }
 
   async remove(id: string) {
