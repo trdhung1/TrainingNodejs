@@ -1,12 +1,15 @@
 /* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Transform } from 'class-transformer';
 // eslint-disable-next-line prettier/prettier
-import { Document } from 'mongoose';
+import { Document, ObjectId } from 'mongoose';
 
 export type MemberDocument = Member & Document;
 
 @Schema()
 export class Member {
+  @Transform(({ value }) => value.toString())
+  _id: ObjectId;
   @Prop()
   userName: string;
 
@@ -20,7 +23,7 @@ export class Member {
   password: string;
 
   @Prop()
-  stastus: string;
+  status: string;
 
   @Prop()
   role: string;

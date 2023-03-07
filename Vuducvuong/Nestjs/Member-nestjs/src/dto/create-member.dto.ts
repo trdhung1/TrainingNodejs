@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 // eslint-disable-next-line prettier/prettier
 import { Member } from '../entities/member.entity';
-import { IsEmail, IsNotEmpty, IsIn } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsIn, IsEnum } from 'class-validator';
+import { StatusMember } from './statusmember.enum';
 export class CreateMemberDto extends Member {
     
     @IsEmail()
@@ -12,6 +13,9 @@ export class CreateMemberDto extends Member {
 
     @IsNotEmpty()
     userName: string;
+
+    @IsEnum(StatusMember)
+    status: StatusMember;
 
     @IsIn(['Admin', 'HR', 'PM', 'User'])
     role: string;

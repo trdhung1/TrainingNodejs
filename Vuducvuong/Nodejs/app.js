@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 8080;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('crypto').randomBytes(64).toString('hex')
@@ -79,14 +79,14 @@ app.get('/data2', async function (req, res) {
 app.get('/read', async function (req, res) {
     readXlsxFile(fs.createReadStream('C:/Users/PC/Downloads/1.xlsx'))
     .then((rows) => {
-        res.send(rows.toString())
+        res.send(rows.toString)
       })
       
 })
 
 app.get('/write', async function (req, res) {
 var content = ',5,Histo,sachhay,author4,350,'
-fs.writeFile('1.xlsx', content, function (err) {
+fs.writeFile('books.xlsx', content, function (err) {
     if (err)
         throw err;
     else //nếu không thì hiển thị nội dung ghi file thành công

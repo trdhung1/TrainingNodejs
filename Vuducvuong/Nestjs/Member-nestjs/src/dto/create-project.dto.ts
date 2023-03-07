@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { IsIn } from 'class-validator';
+import { IsEnum } from 'class-validator';
 import { Project } from '../entities/project.entity';
+import { Status } from './statusproject.enum';
 
 export class CreateProjectDto extends Project {
-      @IsIn(['Pendding', 'Running','Done'])
-      status: string;
+      @IsEnum(Status)
+      status: Status;
     }
 

@@ -1,13 +1,16 @@
 /* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Transform, Type } from 'class-transformer';
 // eslint-disable-next-line prettier/prettier
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, ObjectId } from 'mongoose';
 import { Member } from './member.schema';
 
 export type ProjectDocument = Project & Document;
 
 @Schema()
 export class Project {
+  @Transform(({ value }) => value.toString())
+  _id: ObjectId;
   @Prop()
   projectName: string;
 
@@ -21,10 +24,13 @@ export class Project {
   endDate: Date;
 
   @Prop([{type: mongoose.Schema.Types.ObjectId, ref: Member.name}])
-  members: string[];
+  @Type(() => Member)
+  members: Member;
 
-  @Prop()
-  projectManager: string;
+  
+  @Prop({type: mongoose.Schema.Types.ObjectId, ref: Member.name})
+  @Type(() => Member)
+  projectManager: Member;
 
 }
 

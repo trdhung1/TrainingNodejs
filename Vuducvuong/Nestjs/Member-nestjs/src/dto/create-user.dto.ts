@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 // eslint-disable-next-line prettier/prettier
 import { User } from '../entities/user.entity';
-import {  IsIn, IsNotEmpty } from 'class-validator';
+import {  IsEnum, IsNotEmpty } from 'class-validator';
 import { Role } from 'src/role/role.enum';
 export class CreateUserDto extends User {
 
@@ -11,7 +11,7 @@ export class CreateUserDto extends User {
     @IsNotEmpty()
     password: string;
 
-    @IsIn(['Admin', 'HR', 'PM', 'User'])
+    @IsEnum(Role)
     roles: Role[];
 
     
