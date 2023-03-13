@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "mongodb-memory-server-global": "^8.11.5"
+  }
+}
+

@@ -13,9 +13,9 @@ import {
 import { UserService } from './users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto'
-import { resetPasswordDto } from 'src/dto/resetpass.dto';
-import { Roles } from 'src/role/roles.decorator';
-import { Role } from 'src/role/role.enum';
+import { resetPasswordDto } from '../dto/resetpass.dto';
+import { Roles } from '../role/roles.decorator';
+import { Role } from '../role/role.enum';
 
 @Controller('users')
 export class UserController {
@@ -33,18 +33,18 @@ export class UserController {
     return this.userService.resetpassword(resetpassword);
   }
 
-  @Get()
-  findAll() {
+  @Get('/')
+  GetAllUser() {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Body('id') id: string) {
-    return this.userService.findOne(id);
+  @Get('/:id')
+  GetUser( @Param('id') id: string) {
+    return this.userService.GetById(id);
   }
 
   @Put(':id')
-  update(
+  Update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
@@ -53,7 +53,7 @@ export class UserController {
 
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  Remove(@Param('id') id: string) {
     this.userService.remove(id);
     return "delete successful"
   }

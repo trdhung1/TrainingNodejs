@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto'
 import { User, UsersDocument } from '../schema/user.schema';
 import * as bcrypt from 'bcrypt';
-import { resetPasswordDto } from 'src/dto/resetpass.dto';
+import { resetPasswordDto } from '../dto/resetpass.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -26,7 +26,7 @@ export class UserService {
     const user = await this.userModel.findOne({ username: resetpassword.username });
     const check = await bcrypt.compare(resetpassword.password, user.password);
     if (!user || !check) {
-      throw new BadRequestException('wrong username or password');
+      throw new HttpException('wrong username or password', HttpStatus.NOT_FOUND);
     }
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(resetpassword.passwordreset, salt);
@@ -35,13 +35,24 @@ export class UserService {
 
   }
 
-  async findAll(): Promise<UsersDocument[]> {
-    return await this.userModel.find().exec();
+  async findAll() {
+    const users: UsersDocument[]= await this.userModel.find();
+    return users.map((user: any) => {
+        delete user.password;
+        return user;
+    }) ;
   }
 
-  async findOne(id: string) {
-    return await this.userModel.findById(id);
+  async GetById(id: string) {
+    try {
+      const user = await this.userModel.findOne({_id: id});
+      return user;
+    }
+    catch (err) {
+      throw new BadRequestException(err.message, { cause: new Error(), description: 'wrong id ' });
+    }
   }
+
 
   async update(
     id: string,
