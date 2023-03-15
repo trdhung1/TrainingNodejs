@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Transform } from 'class-transformer';
+import { Document, ObjectId } from 'mongoose';
 
 
 
@@ -8,7 +9,8 @@ export type UsersDocument = User & Document;
 
 @Schema()
 export class User {
-  
+  @Transform(({ value }) => value.toString())
+  _id: ObjectId;
   @Prop()
   userName: string;
 

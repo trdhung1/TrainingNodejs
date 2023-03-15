@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './role/roles.guard';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { ProjectModule } from './project/project.module';
+import { TimeSheetsModule } from './timesheets/timesheets.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
@@ -15,6 +17,8 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     ),
     UserModule,
     AuthModule,
+    ProjectModule,
+    TimeSheetsModule,
   ],
   controllers: [AppController],
   providers: [AppService,
