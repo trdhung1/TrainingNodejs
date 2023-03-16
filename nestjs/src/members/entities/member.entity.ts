@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+import { Project } from 'src/projects/entites/project.entity';
 import {
   Entity,
   Column,
@@ -36,4 +37,7 @@ export class Member {
   @ManyToOne(() => Member)
   @JoinColumn()
   onboardingMentor: Member;
+
+  @ManyToOne(() => Project, (project) => project.members)
+  project: Project;
 }

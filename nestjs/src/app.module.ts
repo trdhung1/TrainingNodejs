@@ -17,6 +17,11 @@ import { logger, LoggerMiddleware } from './logger/logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MembersModule } from './members/members.module';
 import { Member } from './members/entities/member.entity';
+import { ProjectsModule } from './projects/projects.module';
+import { Project } from './projects/entites/project.entity';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import DatabaseLogger from './logger/dbLogger';
 
 @Module({
   imports: [
@@ -30,8 +35,12 @@ import { Member } from './members/entities/member.entity';
       port: 5432,
       database: 'vatek',
       synchronize: true,
-      entities: [Member],
+      logger: new DatabaseLogger(),
+      entities: [Member, Project],
     }),
+    ProjectsModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [

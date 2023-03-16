@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { IsInt, IsString, IsEmail, IsBoolean, IsEnum } from 'class-validator';
+import { IsInt, IsString, IsEmail, IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 export enum Role {
   ADMIN = 'ADMIN',
@@ -22,7 +22,7 @@ export enum Status {
 }
 
 export class CreateMemberDto {
-  @IsString()
+  @IsString({message:'test'})
   userName: string;
 
   @IsString()
@@ -42,4 +42,8 @@ export class CreateMemberDto {
 
   @IsEnum(Position)
   position: Position;
+
+  @IsOptional()
+  @IsInt()
+  onboardingMentor: number;
 }
