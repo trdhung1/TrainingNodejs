@@ -34,7 +34,7 @@ export class CatsController {
   }
   @Post()
   @UsePipes(ValidationPipe)
-  @Role('admin')
+  @Role('ADMIN')
   create(@Body() createCatDto: CreateCatDto) {
     console.log(createCatDto);
     this.catsService.create(createCatDto);

@@ -22,7 +22,7 @@ export enum Status {
 }
 
 export class CreateMemberDto {
-  @IsString({message:'test'})
+  @IsString()
   userName: string;
 
   @IsString()

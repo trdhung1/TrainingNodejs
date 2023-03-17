@@ -1,11 +1,15 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ResetPasswordDto } from 'src/auth/auth.controller';
+import { comparePassword, hashPassword } from 'src/utils/bcrypt';
 import { Repository } from 'typeorm';
+import { CreateMemberDto } from './dtos/create-member.dto';
 import { Member } from './entities/member.entity';
 
 @Injectable()
@@ -26,25 +30,53 @@ export class MembersService {
   }
 
   async createMember(createMember) {
-    const { email } = createMember;
-    const member = await this.memberRepository.findOne({ where: { email } });
-    if (member) {
-      return new HttpException(
-        'Email has already existed',
-        HttpStatus.BAD_REQUEST,
-      );
+    try {
+      const { email } = createMember;
+      const member = await this.memberRepository.findOne({ where: { email } });
+      if (member) {
+        throw new HttpException(
+          'Email has already existed',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const hash = await hashPassword(createMember.password);
+      return this.memberRepository.save({ ...createMember, password: hash });
+    } catch (error) {
+      throw new BadRequestException(error.message, error.status);
     }
-    return this.memberRepository.save(createMember);
   }
 
   async updateMember(updateMember) {
-    const { id } = updateMember;
-    const member = await this.memberRepository.findOne({ where: { id } });
-    if (!member) {
-      return new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+    try {
+      const { id } = updateMember;
+      const member = await this.memberRepository.findOne({ where: { id } });
+      if (!member) {
+        throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+      }
+      const newMember = { ...member, ...updateMember };
+      return this.memberRepository.save(newMember);
+    } catch (error) {
+      throw new BadRequestException(error.message, error.status);
     }
-    const newMember = { ...member, ...updateMember };
-    return this.memberRepository.save(newMember);
+  }
+
+  async updatePasswordByEmail(updateMember: ResetPasswordDto) {
+    try {
+      const { email, password } = updateMember;
+      const member = await this.memberRepository.findOne({ where: { email } });
+      if (!member) {
+        throw new HttpException('Wrong email', HttpStatus.NOT_FOUND);
+      }
+      const isMatch = await comparePassword(password, member.password);
+      if (!isMatch) {
+        throw new HttpException('Wrong password', HttpStatus.NOT_FOUND);
+      }
+      const newPassword = await hashPassword(updateMember.newPassword);
+      const newMember = { ...member, password: newPassword };
+      return this.memberRepository.save(newMember);
+    } catch (error) {
+      throw new BadRequestException(error.message, error.status);
+    }
   }
 
   deleteMember(id: number) {

@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { create } from 'domain';
+import {
+  CreateMemberDto,
+  Position,
+  Role,
+} from 'src/members/dtos/create-member.dto';
 import { MembersService } from 'src/members/members.service';
 import { UsersService } from 'src/users/users.service';
+import { comparePassword } from 'src/utils/bcrypt';
+import { ResetPasswordDto } from './auth.controller';
 
 @Injectable()
 export class AuthService {
@@ -13,17 +21,27 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.membersService.findByEmail(username);
-    if (user && user.password === pass) {
+    const isMatch = await comparePassword(pass, user.password);
+    if (user && isMatch) {
       const { password, ...result } = user;
+      //return user has no password
       return result;
     }
     return null;
   }
 
   async login(user: any) {
-    const payload = { username: user.email, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(user),
     };
+  }
+
+  register(createUser) {
+    const user = { ...createUser, role: Role.USER, position: Position.INTERN };
+    return this.membersService.createMember(user);
+  }
+
+  resetPassword(resetPasswordDto: ResetPasswordDto) {
+    return this.membersService.updatePasswordByEmail(resetPasswordDto);
   }
 }
