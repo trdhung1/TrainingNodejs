@@ -9,6 +9,8 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserLoginDto } from 'src/dto/update-user-onlogin.dto';
 import * as xlsx from 'xlsx';
 
+
+
 @Injectable()
 export class UserService {
   constructor(
@@ -28,22 +30,52 @@ export class UserService {
     const newUser = new this.userModel(user);
     return newUser.save();
   }
-  async importExcel() {
-    const workbook = xlsx.readFile("C:/Users/PCDocuments/User.xlsx")
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]],
-    range = xlsx.utils.decode_range(worksheet["!ref"]);
-   
 
-     for (let row = range.s.r; row <= range.e.r; row++) {
+  async createlist(createlistuserdto: CreateUserDto[]) {
+    const users: UsersDocument[] = await this.userModel.find().select('userName');
+    const nameList = users.map(user => user.userName)
+    const newUser = this.userModel.insertMany(createlistuserdto.filter(userItem => !nameList.includes(userItem.userName)).map(item => {
+      const salt = bcrypt.genSaltSync();
+      const hashPassword = bcrypt.hashSync(item.password, salt);
+      item.password = hashPassword;
+      return item;
 
-    const data = [];
-    for (let col = range.s.c; col <= range.e.c; col++) {
-      const cell = worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-      data.push(cell.v);
-    }
-    return data;
+    }));
+    return newUser;
+
   }
-}
+
+  // async register(register: CreateUserDto)
+  //  {
+  //   const member = await this.userModel.findOne({ userName: register.userName });
+  //   if (member) {
+  //     throw new BadRequestException("username is exit");
+  //   }
+  //   const user = await new this.userModel(register);
+  //   const salt = await bcrypt.genSalt();
+  //   const hashPassword = await bcrypt.hash(user.password, salt);
+  //   user.password = hashPassword;
+  //   user.roles = Role.User;
+  //   const newUser = new this.userModel(user);
+  //    return newUser.save();
+  //  }
+
+  async importExcel(xlData: CreateUserDto[]) {
+    const workbook = xlsx.readFile("C:/Users/PC/Documents/User.xlsx")
+    const sheet_name_list = workbook.SheetNames;
+    xlData = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    const users: UsersDocument[] = await this.userModel.find().select('userName');
+    const nameList = users.map(user => user.userName)
+    const newUser = this.userModel.insertMany(xlData.filter(userItem => !nameList.includes(userItem.userName)).map(item => {
+      const salt = bcrypt.genSaltSync();
+      const hashPassword = bcrypt.hashSync(item.password, salt);
+      item.password = hashPassword;
+      return item;
+
+    }));
+    return newUser;
+
+  }
 
   async updateuserlogin(updateUserLoginDto: UpdateUserLoginDto): Promise<UsersDocument> {
     try {

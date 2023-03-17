@@ -5,7 +5,7 @@ import { Model } from "mongoose";
 import { CreateTimesheetsDto } from "src/dto/create-timesheets.dto";
 import { UpdateTimesheetsDto } from "src/dto/update-timesheets.dto";
 import { Timesheets, TimesheetsDocument } from "src/schema/timesheets.schema";
-
+import * as fs from 'fs'
 @Injectable()
 export class TimesheetsService{
     constructor(
@@ -14,13 +14,24 @@ export class TimesheetsService{
     ){}
 
     public async create(createTimeSheetsDto : CreateTimesheetsDto): Promise<TimesheetsDocument>{
-        const timesheets = new this.timesheetsModel({
-            ...createTimeSheetsDto,
-          });
-          await timesheets.populate('projectId');
-          await timesheets.populate('userId')
-          return  timesheets.save();
-        }
+        
+            const timesheets = new this.timesheetsModel({
+                ...createTimeSheetsDto,
+              });
+              await timesheets.populate('projectId');
+              await timesheets.populate('userId')
+              return  timesheets.save();
+        
+   }
+    
+   public async findTimeSheets(id: string):Promise<TimesheetsDocument[]>{
+    const timesheets :TimesheetsDocument[] = await this.timesheetsModel.find({userId : id})
+    fs.writeFile ("C:/Users/PC/Documents/timesheets.json", JSON.stringify(timesheets), function(err) {
+        if (err) throw err;
+        console.log('complete');
+        })
+    return timesheets;
+   }
 
     public async findAll():Promise<TimesheetsDocument[]>{
         return await this.timesheetsModel.find().populate('projectId').populate('userId')

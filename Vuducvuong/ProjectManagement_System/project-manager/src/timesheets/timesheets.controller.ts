@@ -13,12 +13,17 @@ export class TimesheetsController{
     @Post()
     create(@Body() createTimesheetsDto : CreateTimesheetsDto)
     {
-        return this.TimesheetsSevice.create(createTimesheetsDto)
+        return this.TimesheetsSevice.create(createTimesheetsDto);
     }
 
     @Get()
     GetAll(){
         return this.TimesheetsSevice.findAll()
+    }
+
+    @Get('/findByUser')
+    ExportTimeSheetsByUser(@Body() id: string){
+        return this.TimesheetsSevice.findTimeSheets(id)
     }
 
     @Get(':id')
