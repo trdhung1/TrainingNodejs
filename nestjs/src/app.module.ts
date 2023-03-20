@@ -1,7 +1,8 @@
 import {
-    MiddlewareConsumer,
-    Module,
-    NestModule, ValidationPipe
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  ValidationPipe,
 } from '@nestjs/common';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -20,6 +21,7 @@ import { MembersModule } from './members/members.module';
 import { Project } from './projects/entites/project.entity';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     UsersModule,
     FilesModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Member } from 'src/members/entities/member.entity';
 import { Repository } from 'typeorm';
+import { UpdateProjectDto } from './dtos/update-project.dto';
 import { Project } from './entites/project.entity';
 
 @Injectable()
@@ -23,31 +24,39 @@ export class ProjectsService {
     return this.projectRepository.save(createProject);
   }
 
-  async update(updateProject) {
+  async updateProjectById(id: number, updateProject) {
     try {
-      const { id } = updateProject;
       const { members } = updateProject;
       const userList = await this.memberRepository.find();
       const idList = userList.map((user) => user.id);
-      let exist = true;
-      members.forEach((mem) => {
-        if (!idList.includes(mem.id)) {
-          exist = false;
-          return;
-        }
+      const newMembers = members?.filter((member) => {
+        return idList.includes(member.id);
       });
-      if (!exist) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-      }
+      console.log('newMembers', newMembers);
 
       const project = await this.projectRepository.findOne({ where: { id } });
       if (!project) {
         throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
       }
-      const newProject = { ...project, ...updateProject };
+      const newProject = {
+        ...project,
+        ...updateProject,
+        members: newMembers || project.members,
+      };
+
       return this.projectRepository.save(newProject);
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
+  }
+  getMembersByProjectId(id: number) {
+    return this.projectRepository.findOne({
+      relations: {
+        members: true,
+      },
+      where: {
+        id,
+      },
+    });
   }
 }

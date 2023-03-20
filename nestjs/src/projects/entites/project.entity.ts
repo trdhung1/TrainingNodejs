@@ -9,6 +9,8 @@ import {
   OneToMany,
   OneToOne,
   IsNull,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -28,12 +30,13 @@ export class Project {
   @Column({ type: 'date', nullable: true })
   endDate: string;
 
-  @OneToMany(() => Member, (member) => member.project, {
+  @ManyToMany(() => Member, (member) => member.projects, {
     cascade: ['insert', 'update'],
   })
+  @JoinTable()
   public members: Member[];
 
-  @OneToOne(() => Member)
+  @ManyToOne(() => Member)
   @JoinColumn()
   projectManager: Member;
 }

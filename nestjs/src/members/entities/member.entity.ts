@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
 } from 'typeorm';
 
 @Entity()
@@ -38,6 +39,8 @@ export class Member {
   @JoinColumn()
   onboardingMentor: Member;
 
-  @ManyToOne(() => Project, (project) => project.members)
-  project: Project;
+  @ManyToMany(() => Project, (project) => project.members, {
+    cascade: ['insert', 'update'],
+  })
+  projects: Project;
 }

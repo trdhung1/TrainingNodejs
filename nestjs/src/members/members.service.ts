@@ -7,7 +7,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ResetPasswordDto } from 'src/auth/auth.controller';
-import { comparePassword, hashPassword } from 'src/utils/bcrypt';
+import {
+  comparePassword,
+  hashPassword,
+  hashSyncPassword,
+} from 'src/utils/bcrypt';
 import { Repository } from 'typeorm';
 import { CreateMemberDto } from './dtos/create-member.dto';
 import { Member } from './entities/member.entity';
@@ -35,7 +39,7 @@ export class MembersService {
       const member = await this.memberRepository.findOne({ where: { email } });
       if (member) {
         throw new HttpException(
-          'Email has already existed',
+          'The email has already existed',
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -46,15 +50,33 @@ export class MembersService {
     }
   }
 
-  async updateMember(updateMember) {
+  async updateMember(id: number, updateMember) {
     try {
-      const { id } = updateMember;
       const member = await this.memberRepository.findOne({ where: { id } });
       if (!member) {
         throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
       }
       const newMember = { ...member, ...updateMember };
       return this.memberRepository.save(newMember);
+    } catch (error) {
+      throw new BadRequestException(error.message, error.status);
+    }
+  }
+
+  async createManyMember(memberList) {
+    try {
+      const members = await this.memberRepository.find();
+      const emailList = members.map((member) => member.email);
+
+      const newData = memberList
+        .filter((user: any) => !emailList.includes(user.email))
+        .map((user: any) => {
+          const { password } = user;
+          const hashPassword = hashSyncPassword(`${password}`);
+          return { ...user, password: hashPassword };
+        });
+      return this.memberRepository.save(newData);
+      return newData;
     } catch (error) {
       throw new BadRequestException(error.message, error.status);
     }
@@ -85,5 +107,29 @@ export class MembersService {
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
+  }
+
+  getProjectsByMemberId(id: number) {
+    return this.memberRepository.findOne({
+      relations: {
+        projects: true,
+      },
+      where: {
+        id,
+      },
+    });
+  }
+
+  getPMByMemberId(id: number) {
+    return this.memberRepository.findOne({
+      relations: {
+        projects: {
+          projectManager: true,
+        },
+      },
+      where: {
+        id,
+      },
+    });
   }
 }

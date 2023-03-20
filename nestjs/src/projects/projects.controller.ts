@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { Role, Roles } from 'src/auth/decorators/auth.decorator';
 import { CreateProjectDto } from './dtos/create-project.dto';
+import { UpdateProjectDto } from './dtos/update-project.dto';
 import { ProjectsService } from './projects.service';
 
 @Controller('projects')
@@ -34,8 +35,17 @@ export class ProjectsController {
     return this.projectService.create(createProject);
   }
   @Roles(Role.ADMIN)
-  @Put()
-  updateProject(@Body() updateProject) {
-    return this.projectService.update(updateProject);
+  @Put(':id')
+  updateProject(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProject: UpdateProjectDto,
+  ) {
+    return this.projectService.updateProjectById(id, updateProject);
+  }
+
+  @Roles(Role.PM)
+  @Get(':id/members')
+  getMembersByProjectId(@Param('id', ParseIntPipe) id: number) {
+    return this.projectService.getMembersByProjectId(id);
   }
 }

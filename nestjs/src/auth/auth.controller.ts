@@ -16,6 +16,7 @@ import { Public, Role, Roles } from './decorators/auth.decorator';
 import { CreateMemberDto } from 'src/members/dtos/create-member.dto';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { IsEmail, IsString } from 'class-validator';
+import { ApiBody, ApiProperty } from '@nestjs/swagger';
 
 export class ResetPasswordDto {
   @IsEmail()
@@ -26,7 +27,9 @@ export class ResetPasswordDto {
   newPassword: string;
 }
 class SignInDto {
+  @ApiProperty()
   email: string;
+  @ApiProperty()
   password: string;
 }
 @Controller('auth')
@@ -36,6 +39,7 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiBody({ type: [SignInDto] })
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
@@ -47,7 +51,7 @@ export class AuthController {
   }
 
   //   @UseGuards(JwtAuthGuard)
-  @Roles(Role.ADMIN, Role.HR)
+  @Roles(Role.ADMIN)
   @Get('admin')
   getProfile(@Request() req) {
     return req.user;
