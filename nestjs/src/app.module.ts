@@ -22,9 +22,11 @@ import { Project } from './projects/entites/project.entity';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     CatsModule,
     MembersModule,
     TypeOrmModule.forRoot({

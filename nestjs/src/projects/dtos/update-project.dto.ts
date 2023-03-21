@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { CreateProjectDto, Status } from './create-project.dto';
+import { CreateProjectDto, MemberProperty, Status } from './create-project.dto';
 import {
   IsInt,
   IsString,
@@ -11,28 +11,6 @@ import {
   IsDateString,
   IsArray,
 } from 'class-validator';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
-export class UpdateProjectDto extends CreateProjectDto {
-  @IsOptional()
-  @IsString()
-  projectName: string;
-
-  @IsOptional()
-  @IsEnum(Status)
-  status: Status;
-
-  @IsOptional()
-  @IsDateString()
-  openDate: Date;
-
-  @IsOptional()
-  @IsDateString()
-  endDate: Date;
-
-  @IsOptional()
-  @IsArray()
-  members: Array<{ id: number }>;
-
-  //   @IsInt()
-  projectManager: { id: number };
-}
+export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

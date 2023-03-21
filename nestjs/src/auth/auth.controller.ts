@@ -16,13 +16,18 @@ import { Public, Role, Roles } from './decorators/auth.decorator';
 import { CreateMemberDto } from 'src/members/dtos/create-member.dto';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { IsEmail, IsString } from 'class-validator';
-import { ApiBody, ApiProperty } from '@nestjs/swagger';
+import { ApiBody, ApiProperty, ApiResponse } from '@nestjs/swagger';
 
 export class ResetPasswordDto {
+  @ApiProperty()
   @IsEmail()
   email: string;
+
+  @ApiProperty()
   @IsString()
   password: string;
+
+  @ApiProperty()
   @IsString()
   newPassword: string;
 }
@@ -39,7 +44,7 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @ApiBody({ type: [SignInDto] })
+  @ApiBody({ type: SignInDto })
   async login(@Request() req) {
     return this.authService.login(req.user);
   }

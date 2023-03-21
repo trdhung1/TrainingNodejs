@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+import { Exclude } from 'class-transformer';
 import { Project } from 'src/projects/entites/project.entity';
 import {
   Entity,
@@ -23,7 +24,7 @@ export class Member {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column()

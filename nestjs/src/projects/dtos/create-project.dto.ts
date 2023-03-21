@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsInt,
   IsString,
@@ -17,23 +18,45 @@ export enum Status {
   DONE = 'DONE',
 }
 
+export class MemberProperty {
+  @ApiProperty()
+  id: number;
+}
+
 export class CreateProjectDto {
+  @ApiProperty()
   @IsString()
   projectName: string;
 
+  @ApiProperty({ enum: Status })
   @IsEnum(Status)
   status: Status;
 
+  @ApiProperty({
+    type: Date,
+  })
   @IsDateString()
-  openDate: Date;
+  openDate: string;
 
+  @ApiProperty({
+    type: Date,
+  })
   @IsOptional()
   @IsDateString()
-  endDate: Date;
+  @ApiPropertyOptional()
+  endDate: string;
 
+  @ApiProperty({
+    type: [MemberProperty],
+    description: 'array id of member in project',
+  })
   @IsArray()
-  members: Array<{ id: number }>;
+  members: MemberProperty[];
 
   //   @IsInt()
-  projectManager: { id: number };
+  @ApiProperty({
+    type: MemberProperty,
+    description: 'id of member who manage project',
+  })
+  projectManager: MemberProperty;
 }

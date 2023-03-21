@@ -14,7 +14,9 @@ import {
 } from 'src/utils/bcrypt';
 import { Repository } from 'typeorm';
 import { CreateMemberDto } from './dtos/create-member.dto';
+import { UpdateMemberDto } from './dtos/update-member.dto';
 import { Member } from './entities/member.entity';
+import { MemberAttribute, ProjectAttribute } from './members.controller';
 
 @Injectable()
 export class MembersService {
@@ -22,18 +24,38 @@ export class MembersService {
     @InjectRepository(Member) private memberRepository: Repository<Member>,
   ) {}
 
-  findAll(): Promise<Member[]> {
-    return this.memberRepository.find();
+  findAll(memberAttribute?: MemberAttribute) {
+    const { email, userName, fullName, role, status } = memberAttribute;
+    return this.memberRepository.find({
+      where: {
+        email,
+        userName,
+        fullName,
+        role,
+        status,
+      },
+    });
   }
   findById(id: number): Promise<Member> {
     return this.memberRepository.findOne({ where: { id } });
   }
 
   findByEmail(email: string): Promise<Member> {
-    return this.memberRepository.findOne({ where: { email } });
+    return this.memberRepository.findOne({
+      where: { email },
+      select: [
+        'id',
+        'email',
+        'userName',
+        'fullName',
+        'password',
+        'role',
+        'position',
+      ],
+    });
   }
 
-  async createMember(createMember) {
+  async createMember(createMember: CreateMemberDto) {
     try {
       const { email } = createMember;
       const member = await this.memberRepository.findOne({ where: { email } });
@@ -50,7 +72,7 @@ export class MembersService {
     }
   }
 
-  async updateMember(id: number, updateMember) {
+  async updateMember(id: number, updateMember: UpdateMemberDto) {
     try {
       const member = await this.memberRepository.findOne({ where: { id } });
       if (!member) {
@@ -109,13 +131,17 @@ export class MembersService {
     }
   }
 
-  getProjectsByMemberId(id: number) {
+  getProjectsByMemberId(id: number, attribute: ProjectAttribute) {
     return this.memberRepository.findOne({
       relations: {
         projects: true,
       },
       where: {
-        id,
+        id: id,
+        projects: {
+          openDate: attribute.openDate,
+          endDate: attribute.endDate,
+        },
       },
     });
   }

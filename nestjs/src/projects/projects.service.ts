@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Member } from 'src/members/entities/member.entity';
 import { Repository } from 'typeorm';
+import { CreateProjectDto } from './dtos/create-project.dto';
 import { UpdateProjectDto } from './dtos/update-project.dto';
 import { Project } from './entites/project.entity';
 
@@ -20,11 +21,11 @@ export class ProjectsService {
     return this.projectRepository.findOne({ where: { id } });
   }
 
-  create(createProject) {
+  create(createProject: CreateProjectDto) {
     return this.projectRepository.save(createProject);
   }
 
-  async updateProjectById(id: number, updateProject) {
+  async updateProjectById(id: number, updateProject: UpdateProjectDto) {
     try {
       const { members } = updateProject;
       const userList = await this.memberRepository.find();
@@ -32,7 +33,6 @@ export class ProjectsService {
       const newMembers = members?.filter((member) => {
         return idList.includes(member.id);
       });
-      console.log('newMembers', newMembers);
 
       const project = await this.projectRepository.findOne({ where: { id } });
       if (!project) {

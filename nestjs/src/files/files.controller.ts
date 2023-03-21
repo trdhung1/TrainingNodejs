@@ -10,25 +10,37 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Public, Role, Roles } from 'src/auth/decorators/auth.decorator';
 import { MembersService } from 'src/members/members.service';
 import * as xlsx from 'xlsx';
 
+class FileUploadDto {
+  @ApiProperty({ type: 'string', format: 'binary' })
+  file: any;
+}
+@ApiTags('files')
 @Controller('files')
 export class FilesController {
   constructor(private membersService: MembersService) {}
+
+  @ApiOperation({ summary: 'add members from excel file' })
+  @ApiBody({
+    description: 'List of members',
+    type: FileUploadDto,
+  })
   @Roles(Role.ADMIN)
   @Post('upload/excel')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   async uploadFile(
-    @UploadedFile(
-      new ParseFilePipe({
-        // validators: [
-        //   new MaxFileSizeValidator({ maxSize: 10000 }),
-        //   new FileTypeValidator({ fileType: 'image/jpeg' }),
-        // ],
-      }),
-    )
+    @UploadedFile()
     file: Express.Multer.File,
   ) {
     const workbook = xlsx.read(file.buffer);
@@ -37,9 +49,11 @@ export class FilesController {
     return this.membersService.createManyMember(data);
   }
 
+  @ApiOperation({ summary: 'write all members to excel file' })
   @Roles(Role.ADMIN)
   @Get('upload/excel')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   async getFile() {
     const members = await this.membersService.findAll();
     const workbook = xlsx.utils.book_new();

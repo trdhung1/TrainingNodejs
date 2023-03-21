@@ -7,8 +7,8 @@ import {
   IsEnum,
   IsOptional,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { ApiPropertyOptional } from '@nestjs/swagger/dist';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export enum Role {
   ADMIN = 'ADMIN',
@@ -29,7 +29,10 @@ export enum Status {
   FULLTIME = 'FULLTIME',
   PARTTIME = 'PARTTIME',
 }
-
+export class MemberProperty {
+  @ApiProperty()
+  id: number;
+}
 export class CreateMemberDto {
   @ApiProperty({
     description: 'User Name of member',
@@ -50,22 +53,19 @@ export class CreateMemberDto {
   password: string;
 
   @ApiProperty({ enum: Status })
-  @ApiProperty()
   @IsEnum(Status)
   status: Status;
 
   @ApiProperty({ enum: Role })
-  @ApiProperty()
   @IsEnum(Role)
   role: Role;
 
-  @ApiProperty()
+  @ApiProperty({ enum: Position })
   @IsEnum(Position)
   position: Position;
 
-  @ApiProperty()
   @ApiPropertyOptional()
   @IsOptional()
-  @IsInt()
-  onboardingMentor: number;
+  @Type(() => MemberProperty)
+  onboardingMentor: MemberProperty;
 }
