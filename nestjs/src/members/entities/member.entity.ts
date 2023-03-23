@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Exclude } from 'class-transformer';
-import { Project } from 'src/projects/entites/project.entity';
+// import { Project } from 'src/projects/entites/project.entity';
+import { Project } from '../../projects/entites/project.entity';
 import {
   Entity,
   Column,

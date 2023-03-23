@@ -1,18 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
+/* eslint-disable prettier/prettier */
+
+import { Test } from '@nestjs/testing';
 import { MembersController } from './members.controller';
+import { MembersService } from './members.service';
 
 describe('MembersController', () => {
-  let controller: MembersController;
+  let membersController: MembersController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef = await Test.createTestingModule({
       controllers: [MembersController],
+      providers: [MembersService],
     }).compile();
 
-    controller = module.get<MembersController>(MembersController);
+    membersController = moduleRef.get<MembersController>(MembersController);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(membersController).toBeDefined();
+  });
+
+  it('should get all members', () => {
+    expect(membersController.getAllMembers()).not.toEqual(null);
   });
 });

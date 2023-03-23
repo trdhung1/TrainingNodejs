@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Role, Roles } from 'src/auth/decorators/auth.decorator';
+import { Role, Roles } from '../auth/decorators/auth.decorator';
 import { CreateProjectDto } from './dtos/create-project.dto';
 import { UpdateProjectDto } from './dtos/update-project.dto';
 import { ProjectsService } from './projects.service';

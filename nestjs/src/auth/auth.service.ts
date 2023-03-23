@@ -7,6 +7,7 @@ import {
   Role,
 } from 'src/members/dtos/create-member.dto';
 import { MembersService } from 'src/members/members.service';
+import { User } from 'src/users/interfaces/user.interface';
 import { UsersService } from 'src/users/users.service';
 import { comparePassword } from 'src/utils/bcrypt';
 import { ResetPasswordDto } from './auth.controller';
@@ -31,7 +32,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  async login(user: User) {
     return {
       access_token: this.jwtService.sign(user),
     };

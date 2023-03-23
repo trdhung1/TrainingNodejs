@@ -6,12 +6,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ResetPasswordDto } from 'src/auth/auth.controller';
+// import { ResetPasswordDto } from 'src/auth/auth.controller';
+import { ResetPasswordDto } from '../auth/auth.controller';
+// import {
+//   comparePassword,
+//   hashPassword,
+//   hashSyncPassword,
+// } from 'src/utils/bcrypt';
 import {
   comparePassword,
   hashPassword,
   hashSyncPassword,
-} from 'src/utils/bcrypt';
+} from '../utils/bcrypt';
 import { Repository } from 'typeorm';
 import { CreateMemberDto } from './dtos/create-member.dto';
 import { UpdateMemberDto } from './dtos/update-member.dto';
@@ -25,14 +31,13 @@ export class MembersService {
   ) {}
 
   findAll(memberAttribute?: MemberAttribute) {
-    const { email, userName, fullName, role, status } = memberAttribute;
     return this.memberRepository.find({
       where: {
-        email,
-        userName,
-        fullName,
-        role,
-        status,
+        email: memberAttribute?.email,
+        userName: memberAttribute?.userName,
+        fullName: memberAttribute?.fullName,
+        role: memberAttribute?.role,
+        status: memberAttribute?.status,
       },
     });
   }
@@ -85,6 +90,20 @@ export class MembersService {
     }
   }
 
+  async updateMemberByEmail(updateMember: UpdateMemberDto) {
+    try {
+      const { email } = updateMember;
+      const member = await this.memberRepository.findOne({ where: { email } });
+      if (!member) {
+        throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+      }
+      const newMember = { ...member, ...updateMember };
+      return this.memberRepository.save(newMember);
+    } catch (error) {
+      throw new BadRequestException(error.message, error.status);
+    }
+  }
+
   async createManyMember(memberList) {
     try {
       const members = await this.memberRepository.find();
@@ -98,7 +117,7 @@ export class MembersService {
           return { ...user, password: hashPassword };
         });
       return this.memberRepository.save(newData);
-      return newData;
+      //   return newData;
     } catch (error) {
       throw new BadRequestException(error.message, error.status);
     }
@@ -131,7 +150,7 @@ export class MembersService {
     }
   }
 
-  getProjectsByMemberId(id: number, attribute: ProjectAttribute) {
+  getProjectsByMemberId(id: number, attribute?: ProjectAttribute) {
     return this.memberRepository.findOne({
       relations: {
         projects: true,
@@ -139,8 +158,8 @@ export class MembersService {
       where: {
         id: id,
         projects: {
-          openDate: attribute.openDate,
-          endDate: attribute.endDate,
+          openDate: attribute?.openDate,
+          endDate: attribute?.endDate,
         },
       },
     });

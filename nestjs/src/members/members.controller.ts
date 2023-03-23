@@ -21,7 +21,8 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger/dist';
-import { Public, Role, Roles } from 'src/auth/decorators/auth.decorator';
+import { IsOptional } from 'class-validator';
+import { Public, Role, Roles } from '../auth/decorators/auth.decorator';
 import { CreateMemberDto } from './dtos/create-member.dto';
 import { UpdateMemberDto } from './dtos/update-member.dto';
 import { MembersService } from './members.service';
@@ -55,7 +56,7 @@ export class MembersController {
   @ApiOkResponse({ description: 'OK response' })
   @Public()
   @Get()
-  getAllMembers(@Query() memberAttribute: MemberAttribute) {
+  getAllMembers(@Query() memberAttribute?: MemberAttribute) {
     return this.memberService.findAll(memberAttribute);
   }
 

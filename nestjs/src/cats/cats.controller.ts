@@ -33,7 +33,6 @@ export class CatsController {
     // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
   }
   @Post()
-  @UsePipes(ValidationPipe)
   @Role('ADMIN')
   create(@Body() createCatDto: CreateCatDto) {
     console.log(createCatDto);
