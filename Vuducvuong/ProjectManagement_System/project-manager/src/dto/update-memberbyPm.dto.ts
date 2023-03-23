@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { User } from 'src/schema/users.schema';
+import { ApiProperty } from '@nestjs/swagger';
 export class UpdateMemberByPm {
+  @ApiProperty()
   id:string;
-  members: User;
+
+  @ApiProperty()
+  members: string;
 }

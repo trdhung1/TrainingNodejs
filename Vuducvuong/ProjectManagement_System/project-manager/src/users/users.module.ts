@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Module } from '@nestjs/common';
+import {  Module } from '@nestjs/common';
 import { UserService } from './users.service';
 import { UserController } from './users.controller';
 import { User, UsersSchema } from '../schema/users.schema';
@@ -12,7 +12,8 @@ import { MongooseModule } from '@nestjs/mongoose';
         name: User.name,
         schema: UsersSchema,
       },
-    ]),
+    ])
+
   ],
   controllers: [UserController],
   providers: [UserService],

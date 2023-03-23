@@ -6,10 +6,8 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto'
 import { User, UsersDocument } from '../schema/users.schema';
 import * as bcrypt from 'bcrypt';
-import { UpdateUserLoginDto } from 'src/dto/update-user-onlogin.dto';
+import { UpdateUserLoginDto } from '../dto/update-user-onlogin.dto';
 import * as xlsx from 'xlsx';
-
-
 
 @Injectable()
 export class UserService {
@@ -31,7 +29,7 @@ export class UserService {
     return newUser.save();
   }
 
-  async createlist(createlistuserdto: CreateUserDto[]) {
+  async createlist(createlistuserdto: CreateUserDto[]): Promise<UsersDocument[]> {
     const users: UsersDocument[] = await this.userModel.find().select('userName');
     const nameList = users.map(user => user.userName)
     const newUser = this.userModel.insertMany(createlistuserdto.filter(userItem => !nameList.includes(userItem.userName)).map(item => {
@@ -116,7 +114,7 @@ export class UserService {
 
   async GetById(id: string) {
     try {
-      const user = await this.userModel.findOne({ _id: id });
+      const user = await this.userModel.findOne({ _id: id }, { __v:0});
       return user;
     }
     catch (err) {
@@ -141,10 +139,16 @@ export class UserService {
     }
   }
 
-  async remove(id: string) {
-    return await this.userModel.findByIdAndRemove(id);
+  async remove(id: string): Promise<UsersDocument> {
+    try {
+      return await this.userModel.findByIdAndRemove(id);
+    } catch (err) {
+      throw new BadRequestException('wrong id')
+
+    }
+
   }
-  async authentication(userName: string, password: string): Promise<any> {
+  async authentication(userName: string, password: string): Promise<UsersDocument> {
     const user = await this.userModel.findOne({ userName });
     const check = await bcrypt.compare(password, user.password);
     if (!user || !check) {

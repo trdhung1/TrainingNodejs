@@ -1,16 +1,17 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { CreateProjectDto } from 'src/dto/create-project.dto';
-import { UpdateMemberByPm } from 'src/dto/update-memberbyPm.dto';
-import { UpdateProjectDto } from 'src/dto/update-project.dto';
-import { Role } from 'src/role/role.enum';
-import { Roles } from 'src/role/roles.decorator';
+import { CreateProjectDto } from '../dto/create-project.dto';
+import { UpdateMemberByPm } from '../dto/update-memberbyPm.dto';
+import { UpdateProjectDto } from '../dto/update-project.dto';
+import { Role } from '../role/role.enum';
+import { Roles } from '../role/roles.decorator';
 import { ProjectService } from './project.service';
 
 @Controller('project')
 export class ProjectController {
   constructor(private readonly projectsService: ProjectService) {}
 
+  @Roles(Role.Admin)
   @Post()
   Create(@Body() createProjectDto: CreateProjectDto){
     return this.projectsService.create(createProjectDto);

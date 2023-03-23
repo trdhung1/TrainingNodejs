@@ -14,14 +14,14 @@ export class Timesheets {
 
   @Prop({type: mongoose.Schema.Types.ObjectId, ref: Project.name})
   @Type(() => Project)
-  projectId: Project;
+  projectId: string;
 
   @Prop()
   status: string;
 
   @Prop({type : mongoose.Schema.Types.ObjectId,ref: User.name})
   @Type(()=>User)
-   userId: User;
+   userId: string;
 }
 
 export const TimeSheetsSchema = SchemaFactory.createForClass(Timesheets);

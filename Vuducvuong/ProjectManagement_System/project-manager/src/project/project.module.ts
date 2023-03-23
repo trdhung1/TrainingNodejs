@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Module } from "@nestjs/common/decorators";
 import { MongooseModule } from "@nestjs/mongoose";
-import { Project, ProjectSchema } from "src/schema/project.schema";
+import { Project, ProjectSchema } from "../schema/project.schema";
 import { ProjectController } from "./project.controller";
 import { ProjectService } from "./project.service";
 

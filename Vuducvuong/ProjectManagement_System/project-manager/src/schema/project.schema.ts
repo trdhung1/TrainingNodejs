@@ -21,11 +21,11 @@ export class Project {
 
   @Prop({type: mongoose.Schema.Types.ObjectId, ref: User.name})
   @Type(() => User)
-  projectManager: User;
+  projectManager: string;
 
   @Prop([{type: mongoose.Schema.Types.ObjectId, ref: User.name}])
   @Type(() => User)
-  members: User;
+  members: string;
 
   @Prop()
   endDate: Date;

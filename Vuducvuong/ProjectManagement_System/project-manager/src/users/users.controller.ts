@@ -1,21 +1,21 @@
 /* eslint-disable prettier/prettier */
 import {
-    Controller,Get,Post,Body,Param,Delete,Put, UseInterceptors, UploadedFile,
+    Controller,Get,Post,Body,Param,Delete,Put, UseInterceptors, UploadedFile, 
   } from '@nestjs/common';
   import { UserService } from './users.service';
   import { CreateUserDto } from '../dto/create-user.dto';
   import { UpdateUserDto } from '../dto/update-user.dto'
   import { Roles } from '../role/roles.decorator';
   import { Role } from '../role/role.enum';
-  import { UpdateUserLoginDto } from 'src/dto/update-user-onlogin.dto';
-  import { ApiBody} from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { createWriteStream } from 'fs';
-
+  import { UpdateUserLoginDto } from '../dto/update-user-onlogin.dto';
+  import { ApiBearerAuth, ApiBody, ApiOperation} from '@nestjs/swagger';
+  import { FileInterceptor } from '@nestjs/platform-express';
+  import { createWriteStream } from 'fs';
+  @ApiBearerAuth()
   @Controller('users')
   export class UserController {
     constructor(private readonly userService: UserService) { }
-  
+    
     @Roles(Role.Hr)
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
@@ -30,6 +30,7 @@ import { createWriteStream } from 'fs';
       return this.userService.createlist(createlistuserdto);
     }
   
+    @ApiOperation({summary: ' Get All User'})
     @Roles(Role.Admin)
     @Get('/')
     GetAllUser() {
