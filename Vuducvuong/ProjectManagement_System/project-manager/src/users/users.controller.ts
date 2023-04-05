@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import {
-    Controller,Get,Post,Body,Param,Delete,Put, UseInterceptors, UploadedFile, 
+    Controller,Get,Post,Body,Param,Delete,Put, UseInterceptors, UploadedFile, BadRequestException, 
   } from '@nestjs/common';
   import { UserService } from './users.service';
   import { CreateUserDto } from '../dto/create-user.dto';
@@ -8,26 +8,27 @@ import {
   import { Roles } from '../role/roles.decorator';
   import { Role } from '../role/role.enum';
   import { UpdateUserLoginDto } from '../dto/update-user-onlogin.dto';
-  import { ApiBearerAuth, ApiBody, ApiOperation} from '@nestjs/swagger';
+  import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags} from '@nestjs/swagger';
   import { FileInterceptor } from '@nestjs/platform-express';
   import { createWriteStream } from 'fs';
+
+
+  @ApiTags('users')
   @ApiBearerAuth()
   @Controller('users')
   export class UserController {
     constructor(private readonly userService: UserService) { }
-    
-    @Roles(Role.Hr)
-    @Post()
-    create(@Body() createUserDto: CreateUserDto) {
-      // console.log(req.user);
-      return this.userService.create(createUserDto);
-    }
 
-    @Roles(Role.Hr)
+
+    @Roles(Role.Hr,Role.Admin)
     @Post('/listuser')
     @ApiBody({ type: [CreateUserDto] })
-    createList(@Body() createlistuserdto: CreateUserDto[]){
-      return this.userService.createlist(createlistuserdto);
+    async createList(@Body() createlistuserdto: CreateUserDto[]){
+      try {
+        return await this.userService.createlist(createlistuserdto);
+      } catch (error) {
+        throw new BadRequestException(error.message)
+      }
     }
   
     @ApiOperation({summary: ' Get All User'})
@@ -43,19 +44,38 @@ import {
     }
 
     @Post('/importexcel')
+    @UseInterceptors(FileInterceptor('file'))
     @ApiBody({ type: [CreateUserDto] })
-    GetImport(xlData:CreateUserDto[]){
-      return this.userService.importExcel(xlData)
+    GetImport(@UploadedFile() file: Express.Multer.File,xlData:CreateUserDto[]){
+      try{
+        const path = "D:/TrainingNodejs/TrainingNodejs/Vuducvuong/ProjectManagement_System/project-manager/src/fileupload/" + file.originalname
+        const fileStream = createWriteStream(path)
+        fileStream.write(file.buffer)
+        fileStream.end();
+        return this.userService.importExcel(xlData,file)
+      }
+      catch(err)
+      {
+        throw new BadRequestException(err);
+      }
+     
     }
 
-   @Post('/upload')
-   @UseInterceptors(FileInterceptor('file'))
-   async upload(@UploadedFile() file: Express.Multer.File){
-    const path = "d:\\" + file.originalname
-    const fileStream = createWriteStream(path)
-    fileStream.write(file.buffer)
-    fileStream.end();
-  }
+  //  @Post('/upload')
+  //  @UseInterceptors(FileInterceptor('file'))
+  //  async upload(@UploadedFile() file: Express.Multer.File){
+  //   try{
+  //     const path = "D:/TrainingNodejs/TrainingNodejs/Vuducvuong/ProjectManagement_System/project-manager/src/fileupload/" + file.originalname
+  //     const fileStream = createWriteStream(path)
+  //     fileStream.write(file.buffer)
+  //     fileStream.end();
+  //     return path;
+  //   }
+  //   catch(err)
+  //   {
+  //     throw new BadRequestException(err)
+  //   }
+  // }
 
 
     @Put('/update')
@@ -77,8 +97,14 @@ import {
     @Roles(Role.Admin)
     @Delete(':id')
     Remove(@Param('id') id: string) {
-      this.userService.remove(id);
-      return "delete successful"
+      try{
+        this.userService.remove(id);
+        return "delete successful"
+      }
+      catch(err){
+        throw new BadRequestException(err);
+      }
+      
     }
   }
   

@@ -7,7 +7,7 @@ import { User } from './users.schema';
 
 export type TimesheetsDocument = Timesheets & Document;
 
-@Schema()
+@Schema({timestamps: true})
 export class Timesheets {
   @Prop()
   description: string;
@@ -22,6 +22,12 @@ export class Timesheets {
   @Prop({type : mongoose.Schema.Types.ObjectId,ref: User.name})
   @Type(()=>User)
    userId: string;
+
+   @Prop()
+   workingtype: string;
+
+   @Prop()
+   hours: number;
 }
 
 export const TimeSheetsSchema = SchemaFactory.createForClass(Timesheets);

@@ -2,6 +2,7 @@
 import { BadRequestException,  Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import {  Model } from "mongoose";
+import { StatusProject } from "../enum/status-project.enum";
 import { CreateProjectDto } from "../dto/create-project.dto";
 import { UpdateMemberByPm } from "../dto/update-memberbyPm.dto";
 import { UpdateProjectDto } from "../dto/update-project.dto";
@@ -45,6 +46,7 @@ export class ProjectService{
     public async findAll():Promise<ProjectDocument[]>{
             return await this.projectModel.find().populate('members');
         }
+        
 
     public async findProject(id : string)
     {
@@ -64,8 +66,16 @@ export class ProjectService{
      
      public async update(id : string ,updateProjectDto : UpdateProjectDto):Promise<ProjectDocument>{
            try{
-            await this.projectModel.findByIdAndUpdate(id,updateProjectDto)
-            return await this.projectModel.findOne({_id : id})
+            const project = await this.projectModel.findOne({_id: id});
+            if(!project){
+                throw new BadRequestException('wrong id')
+            }
+            const arr = Object.values(StatusProject)
+            if(arr.indexOf(project.status as StatusProject) < arr.indexOf(updateProjectDto.status))
+            {
+             project.status =  updateProjectDto.status  
+            }
+            return project.save();
            }
            catch(err)
            {

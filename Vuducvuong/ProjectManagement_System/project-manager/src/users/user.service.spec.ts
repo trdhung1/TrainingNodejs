@@ -41,14 +41,9 @@ describe('UserService', () => {
       .not.toEqual(null);
     });
    
-    // it('testing register method', () => {
-    //   expect(
-    //     typeof service.create({ userName: 'hung',password: 'vdv123', fullName: 'nguyen tien hung', roles: Role.Admin, status : StatusUser.full}))
-    //     .not.toEqual(null);
-    // });
 
     it('testing update method',()=>{
-      expect(typeof service.update('640ee008f039d7644b9e3381',{userName: 'huy',password: 'vdv123', fullName: 'nguyen tien hung', roles: Role.Admin, status : StatusUser.full}))
+      expect(typeof service.update('640ee008f039d7644b9e3381',{userName: 'huy',password: 'vdv123', fullName: 'nguyen tien hung', roles: Role.Admin, status : StatusUser.approve}))
       .not.toEqual(null);
     })
 

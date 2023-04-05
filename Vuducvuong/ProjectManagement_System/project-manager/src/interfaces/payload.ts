@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-export class Payload {
+export interface Payload {
   id: string;
   userName: string;
   roles: string;

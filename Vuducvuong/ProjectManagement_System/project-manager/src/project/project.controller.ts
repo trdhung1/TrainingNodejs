@@ -1,26 +1,35 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Put,Request } from '@nestjs/common';
+import {  ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateProjectDto } from '../dto/create-project.dto';
 import { UpdateMemberByPm } from '../dto/update-memberbyPm.dto';
 import { UpdateProjectDto } from '../dto/update-project.dto';
 import { Role } from '../role/role.enum';
 import { Roles } from '../role/roles.decorator';
 import { ProjectService } from './project.service';
-
+@ApiBearerAuth()
+@ApiTags('project')
 @Controller('project')
 export class ProjectController {
   constructor(private readonly projectsService: ProjectService) {}
 
   @Roles(Role.Admin)
   @Post()
-  Create(@Body() createProjectDto: CreateProjectDto){
-    return this.projectsService.create(createProjectDto);
+  async Create(@Body() createProjectDto: CreateProjectDto){
+    try{
+      return await this.projectsService.create(createProjectDto);
+    }
+    catch(err)
+    {
+      throw new BadRequestException(err.message);
+    }
+    
   }
-
-  @Get('getproject')
-  GetProject(@Body() id: string)
+ 
+  @Get('getprojectbymember')
+  GetProject(@Request() req)
   {
-    return this.projectsService.findProject(id)
+    return this.projectsService.findProject(req.user._id)
   }
   
   @Roles(Role.Admin)
@@ -43,15 +52,24 @@ export class ProjectController {
   }
   
   @Roles(Role.Admin)
-  @Put(':id')
+  @Patch(':id')
   Update(@Param('id') id : string,
   @Body() updateProjectDto: UpdateProjectDto){
     return this.projectsService.update(id,updateProjectDto)
   }
 
+
+
   @Delete(':id')
-  Remove(@Param('id') id : string ){
-    this.projectsService.remove(id);
-    return 'delete succesfull'
+  async Remove(@Param('id') id : string ){
+    try {
+     await this.projectsService.remove(id);
+       return  'delete succesfull'
+    }
+    catch(err)
+    {
+      throw new BadRequestException(err)
+    }
+    
   }
 }
